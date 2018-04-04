@@ -41,6 +41,7 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 startActivity(new Intent(SplashActivity.this, WeatherMainActivity.class));
+                finish();
             }
 
             @Override

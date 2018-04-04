@@ -2,4 +2,7 @@
 <resources>
     <color name="title_color_ffffff">#ffffff</color>
     <color name="color_tran">#00ffffff</color>
+    <color name="color_hight">#ddffffff</color>
+    <color name="color_low">#aaffffff</color>
+    <color name="color_line">#55ffffff</color>
 </resources>

@@ -68,7 +68,6 @@ public class WindHolder extends BasicWeatherHolder {
         start -= speech;
         if (start < 0) {
             start = 360;
-            changParams(height, mContext);
         }
     }
 }

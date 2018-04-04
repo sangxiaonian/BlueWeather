@@ -2,21 +2,141 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:background="#abcdef"
+    android:id="@+id/root"
     android:orientation="vertical">
 
 
-    <TextView
+    <ScrollView
+        android:padding="@dimen/app_bound_gap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        android:layout_width="match_parent"
-        android:text="@string/app_name"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:text="天气状况"
-        android:textColor="#f00"
-        android:id="@+id/tv_weather"
-        android:layout_height="match_parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:divider="@drawable/line"
+            android:showDividers="middle"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+
+                    android:id="@+id/tv_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="21℃"
+                    android:textColor="@color/color_hight"
+                    android:textSize="80sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="多云"
+                    android:textColor="#ddffffff"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="21℃"
+                        android:textColor="@color/color_hight"
+                        android:textSize="@dimen/text_title_size" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / "
+                        android:textColor="@color/color_low"
+                        android:textSize="@dimen/text_title_size" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11℃"
+                        android:textColor="@color/color_low"
+                        android:textSize="@dimen/text_title_size" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:paddingTop="@dimen/app_bound_gap"
+                android:paddingBottom="@dimen/app_bound_gap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_content_size"
+                    android:textColor="@color/color_hight"
+                    android:text="4月4日星期三"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:src="@mipmap/cond_icon_sun"
+                    android:layout_height="25dp" />
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="end"
+                    android:textSize="@dimen/text_content_size"
+                    android:textColor="@color/color_hight"
+                    android:text="21/11℃"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingTop="@dimen/app_bound_gap"
+                android:paddingBottom="@dimen/app_bound_gap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/text_content_size"
+                    android:textColor="@color/color_hight"
+                    android:text="4月4日星期三"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:src="@mipmap/cond_icon_sun"
+                    android:layout_height="25dp" />
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="end"
+                    android:textSize="@dimen/text_content_size"
+                    android:textColor="@color/color_hight"
+                    android:text="21/11℃"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+            <sang.com.weathermode.widget.LineChartView
+                android:layout_marginTop="@dimen/app_bound_gap"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+        </LinearLayout>
+    </ScrollView>
+
+
 </LinearLayout>
