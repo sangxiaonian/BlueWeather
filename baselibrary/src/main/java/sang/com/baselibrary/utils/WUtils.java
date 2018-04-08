@@ -1,6 +1,7 @@
 package sang.com.baselibrary.utils;
 
 import android.content.Context;
+import android.view.ViewConfiguration;
 
 import java.util.Random;
 
@@ -56,6 +57,7 @@ public class WUtils {
     }
 
 
-
-
+    public static float getTouchSlop(Context context) {
+        return  ViewConfiguration.get(context).getScaledTouchSlop();
+    }
 }
