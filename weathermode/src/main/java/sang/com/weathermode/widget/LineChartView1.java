@@ -9,11 +9,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.Scroller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +24,7 @@ import sang.com.baselibrary.utils.WUtils;
  * 折线图
  */
 
-public class LineChartView extends View implements GestureDetector.OnGestureListener {
+public class LineChartView1 extends View {
 
 
     private Paint mPaint;
@@ -46,21 +43,19 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
 
     private Rect textRect;//文字测量使用
 
-    private Point pointStart, pointEnd;
+    private Point pointDown, pointStart, pointEnd;
     private int lineWidth;
-    private GestureDetector detector;//手势
 
-    private Scroller mScroller;
 
-    public LineChartView(Context context) {
+    public LineChartView1(Context context) {
         this(context, null, 0);
     }
 
-    public LineChartView(Context context, @Nullable AttributeSet attrs) {
+    public LineChartView1(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public LineChartView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public LineChartView1(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context, attrs, defStyleAttr);
     }
@@ -73,16 +68,19 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
         mPaint.setStrokeWidth(lineWidth);
         mPath = new Path();
         lineInfors = new ArrayList<>();
+        pointDown = new Point();
         pointStart = new Point();
         pointEnd = new Point();
         textRect = new Rect();
-        cellWidth = WUtils.dip2px(context, 80);
+
+        cellWidth = WUtils.dip2px(context, 50);
         textSize = WUtils.dip2px(context, 12);
-        detector = new GestureDetector(context, this);
-        mScroller = new Scroller(context);
-        for (int i = 0; i < 7; i++) {
+
+
+        for (int i = 0; i < 20; i++) {
             lineInfors.add(new LineChatBean(WUtils.randomInt(minY, maxY)));
         }
+
     }
 
 
@@ -97,19 +95,81 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (lineInfors != null && !lineInfors.isEmpty()) {
-            canvas.save();
-            canvas.clipRect(0, 0, mWidth, mHeight);
             drawLine(lineInfors, mPath, canvas);
 
-            canvas.restore();
         }
     }
 
 
+    private int downX, downY;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (pointDown.x == 0 && pointDown.y == 0) {
+            pointDown.x = (int) event.getX();
+            pointDown.y = (int) event.getY();
+        }
 
-        return detector.onTouchEvent(event);
+        if (downY == 0 || downX == 0) {
+            downX = (int) event.getX();
+            downY = (int) event.getY();
+        }
+
+        boolean result = true;
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                getParent().requestDisallowInterceptTouchEvent(true);
+                downX = (int) event.getX();
+                downY = (int) event.getY();
+                pointDown.x = downX;
+                pointDown.y = downY;
+
+                result = true;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                final float moveX = event.getX();
+                final float moveY = event.getY();
+                pointStart.x += moveX - pointDown.x;
+                pointStart.y += moveY - pointDown.y;
+                if (Math.abs(moveX - downX) > Math.abs(moveY - downY)) {
+                    result = true;
+                    if (lineInfors != null && !lineInfors.isEmpty()) {
+                        int maxLeft = mWidth - cellWidth * lineInfors.size();
+                        if (pointStart.x < maxLeft) {
+                            pointStart.x = maxLeft;
+//                            result = false;
+//                            getParent().requestDisallowInterceptTouchEvent(false);
+
+                        }
+
+                        if (pointStart.x > 0) {
+                            pointStart.x = 0;
+//                            result = false;
+//                            getParent().requestDisallowInterceptTouchEvent(false);
+                        }
+
+                    }
+                    postInvalidate();
+                } else {
+                    if (Math.abs(moveY - downY) > WUtils.getTouchSlop(getContext())) {
+                        result = false;
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    }
+                }
+                pointDown.x = (int) moveX;
+                pointDown.y = (int) moveY;
+                pointEnd.x = pointStart.x + mWidth;
+                pointEnd.y = pointStart.y + mHeight;
+                break;
+            default:
+                pointDown.x = 0;
+                pointDown.y = 0;
+                downX = 0;
+                downY = 0;
+                break;
+        }
+        return result;
     }
 
 
@@ -120,6 +180,7 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
             if (y == 0) {
                 return;
             }
+            canvas.save();
             mPath.reset();
             for (int i = 0; i < lineInfor.size(); i++) {
                 LineChatBean chatBean = lineInfor.get(i);
@@ -143,12 +204,14 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
                 } else {
                     mPath.lineTo(pointX, pointY);
                 }
-                drawText(canvas, String.valueOf(chatBean.value).concat("℃"), pointX, pointY - lableHeight / 2, textSize);
+                drawText(canvas, String.valueOf(chatBean.value).concat("℃"), pointX, pointY-lableHeight/2, textSize);
             }
             mPaint.setStrokeWidth(lineWidth);
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeMiter(20);
+
             canvas.drawPath(mPath, mPaint);
+            canvas.restore();
 
         }
     }
@@ -163,14 +226,17 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
      * @return
      */
     private int drawTimeText(Canvas canvas, String s, int pointX, int textSize) {
+
         int baseY = mHeight - textRect.height() / 2;
         drawText(canvas, s, pointX, baseY, textSize);
         baseY -= mPaint.getFontSpacing();
         drawText(canvas, s, pointX, baseY, textSize);
         baseY -= mPaint.getFontSpacing();
         drawText(canvas, s, pointX, baseY, textSize);
+//        int y = baseY-getTextHeight(s,textSize)- textRect.height() / 2;
         int y = baseY - getTextHeight(s, textSize);
 
+        canvas.drawLine(0, y, mWidth, y, mPaint);
         return mHeight - y;
 
     }
@@ -196,80 +262,6 @@ public class LineChartView extends View implements GestureDetector.OnGestureList
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.getTextBounds(text, 0, text.length(), textRect);
         return textRect.height();
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        getParent().requestDisallowInterceptTouchEvent(true);
-        return true;
-    }
-
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        changePointStart(distanceX, distanceY);
-        boolean result = true;
-        if ((Math.abs(e1.getX() - e2.getX()) < Math.abs(Math.abs(e1.getY() - e2.getY()))) && Math.abs(e1.getY() - e2.getY()) > WUtils.getTouchSlop(getContext())) {
-            result = false;
-            getParent().requestDisallowInterceptTouchEvent(false);
-        }
-        return result;
-    }
-
-    private void changePointStart(float distanceX, float distanceY) {
-        pointStart.x -= distanceX;
-        pointStart.y -= distanceY;
-        int maxLeft = mWidth - cellWidth * lineInfors.size();
-        if (pointStart.x < maxLeft) {
-            pointStart.x = maxLeft;
-        }
-        if (pointStart.x > 0) {
-            pointStart.x = 0;
-        }
-        pointEnd.x = pointStart.x + mWidth;
-        pointEnd.y = pointStart.y + mHeight;
-        if (lineInfors != null && !lineInfors.isEmpty()) {
-            postInvalidate();
-        }
-    }
-
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return true;
-    }
-
-    private int lastX;
-    private int lastY;
-
-    @Override
-    public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {
-            int currX = mScroller.getCurrX();
-            int currY = mScroller.getCurrY();
-            changePointStart(lastX - currX, lastY - currY);
-            lastX = currX;
-            lastY = currY;
-
-
-        }
-    }
-
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
     }
 
 
