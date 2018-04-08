@@ -8,7 +8,6 @@
 
 
     <ScrollView
-        android:padding="@dimen/app_bound_gap"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -75,8 +74,8 @@
 
 
             <LinearLayout
-                android:paddingTop="@dimen/app_bound_gap"
-                android:paddingBottom="@dimen/app_bound_gap"
+                android:padding="@dimen/app_bound_gap"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
@@ -103,8 +102,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:paddingTop="@dimen/app_bound_gap"
-                android:paddingBottom="@dimen/app_bound_gap"
+
+                android:padding="@dimen/app_bound_gap"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
@@ -129,12 +129,16 @@
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
-
-
             <sang.com.weathermode.widget.LineChartView
                 android:layout_marginTop="@dimen/app_bound_gap"
                 android:layout_width="match_parent"
                 android:layout_height="200dp" />
+
+
+
+
+
+
         </LinearLayout>
     </ScrollView>
 

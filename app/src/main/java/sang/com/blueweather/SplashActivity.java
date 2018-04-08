@@ -23,7 +23,7 @@ public class SplashActivity extends BaseActivity {
         img.setAlpha(0);
         animator = ValueAnimator.ofFloat(0, 1, 0);
 //        animator.setInterpolator(new BreatheInterpolator());
-        animator.setDuration(2500);
+        animator.setDuration(500);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
