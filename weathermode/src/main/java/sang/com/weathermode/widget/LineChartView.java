@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -34,8 +33,8 @@ public class LineChartView extends View {
     //    List<List<LineChatBean>> lineInfors;
     List<LineChatBean> lineInfors;
 
-    private int maxY = 50;
-    private int minY = -50;
+    private int maxY = 25;
+    private int minY = 10;
     private int mHeight;
     private int mWidth;
     private int cellWidth;
@@ -79,11 +78,9 @@ public class LineChartView extends View {
 
 
         for (int i = 0; i < 20; i++) {
-            lineInfors.add(new LineChatBean(WUtils.randomInt(-50, 50)));
+            lineInfors.add(new LineChatBean(WUtils.randomInt(minY, maxY)));
         }
 
-
-        setBackgroundColor(Color.RED);
     }
 
 
@@ -141,21 +138,21 @@ public class LineChartView extends View {
                         int maxLeft = mWidth - cellWidth * lineInfors.size();
                         if (pointStart.x < maxLeft) {
                             pointStart.x = maxLeft;
-                            result = false;
-                            getParent().requestDisallowInterceptTouchEvent(false);
+//                            result = false;
+//                            getParent().requestDisallowInterceptTouchEvent(false);
 
                         }
 
                         if (pointStart.x > 0) {
                             pointStart.x = 0;
-                            result = false;
-                            getParent().requestDisallowInterceptTouchEvent(false);
+//                            result = false;
+//                            getParent().requestDisallowInterceptTouchEvent(false);
                         }
 
                     }
                     postInvalidate();
                 } else {
-                    if (Math.abs(moveY - downY)> WUtils.getTouchSlop(getContext())) {
+                    if (Math.abs(moveY - downY) > WUtils.getTouchSlop(getContext())) {
                         result = false;
                         getParent().requestDisallowInterceptTouchEvent(false);
                     }
@@ -179,7 +176,7 @@ public class LineChartView extends View {
     private void drawLine(List<LineChatBean> lineInfor, Path mPath, Canvas canvas) {
         if (lineInfor != null && !lineInfor.isEmpty()) {
 
-            final int y = maxY - minY;
+            final int y = maxY - minY;//总共的温度范围
             if (y == 0) {
                 return;
             }
@@ -187,18 +184,27 @@ public class LineChartView extends View {
             mPath.reset();
             for (int i = 0; i < lineInfor.size(); i++) {
                 LineChatBean chatBean = lineInfor.get(i);
-                int pointX = cellWidth * i + cellWidth / 2;
-                int pointY = (int) ((chatBean.value * 1.0 / y) * mHeight);
+                int pointX = cellWidth * i + cellWidth / 2;//x中心
                 pointX += pointStart.x;
+
+
+                /**
+                 * 描述文字高度
+                 */
+                int desHeight = drawTimeText(canvas, String.valueOf("晴天"), pointX, textSize);
+                //标签高度
+                int lableHeight = getTextHeight(String.valueOf("晴天"), textSize);
+
+                int height = mHeight - lableHeight * 2 - desHeight;//折线图所占领的高度
+
+                int pointY = (int) (mHeight - desHeight - lableHeight - ((chatBean.value - minY) * 1.0 / y) * height);
+
                 if (i == 0) {
                     mPath.moveTo(pointX, pointY);
                 } else {
                     mPath.lineTo(pointX, pointY);
                 }
-                drawText(canvas, String.valueOf(chatBean.value).concat("℃"), pointX, pointY, textSize);
-
-                drawTimeText(canvas, String.valueOf("晴天"), pointX, textSize);
-
+                drawText(canvas, String.valueOf(chatBean.value).concat("℃"), pointX, pointY-lableHeight/2, textSize);
             }
             mPaint.setStrokeWidth(lineWidth);
             mPaint.setStyle(Paint.Style.STROKE);
@@ -210,18 +216,28 @@ public class LineChartView extends View {
         }
     }
 
-    private void drawTimeText(Canvas canvas, String s, int pointX, int textSize) {
+    /**
+     * 绘制最下边的描述信息，并且返回文字高度
+     *
+     * @param canvas
+     * @param s
+     * @param pointX
+     * @param textSize
+     * @return
+     */
+    private int drawTimeText(Canvas canvas, String s, int pointX, int textSize) {
 
-        int baseY = mHeight - textRect.height() / 2  ;
+        int baseY = mHeight - textRect.height() / 2;
         drawText(canvas, s, pointX, baseY, textSize);
         baseY -= mPaint.getFontSpacing();
         drawText(canvas, s, pointX, baseY, textSize);
         baseY -= mPaint.getFontSpacing();
         drawText(canvas, s, pointX, baseY, textSize);
 //        int y = baseY-getTextHeight(s,textSize)- textRect.height() / 2;
-        int y = baseY -getTextHeight(s,textSize);
+        int y = baseY - getTextHeight(s, textSize);
 
-        canvas.drawLine(0, y,mWidth, y,mPaint);
+        canvas.drawLine(0, y, mWidth, y, mPaint);
+        return mHeight - y;
 
     }
 
@@ -234,9 +250,9 @@ public class LineChartView extends View {
         String s = String.valueOf(text);
         mPaint.getTextBounds(s, 0, s.length(), textRect);
 
-        JLog.i(text+">>>>"+textRect.top);
+        JLog.i(text + ">>>>" + textRect.top);
         canvas.drawText(s, 0, s.length(), pointX, pointY, mPaint);
-        JLog.d(text+">>>>"+textRect.top);
+        JLog.d(text + ">>>>" + textRect.top);
     }
 
     private int getTextHeight(String text, int textSize) {
