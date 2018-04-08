@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -38,7 +40,12 @@ public class LineChartView extends View {
     private int mWidth;
     private int cellWidth;
 
+    private int textSize;
+
+    private Rect textRect;//文字测量使用
+
     private Point pointDown, pointStart, pointEnd;
+    private int lineWidth;
 
 
     public LineChartView(Context context) {
@@ -58,21 +65,25 @@ public class LineChartView extends View {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(WUtils.dip2px(context, 1));
+        lineWidth = WUtils.dip2px(context, 1);
+        mPaint.setStrokeWidth(lineWidth);
         mPath = new Path();
         lineInfors = new ArrayList<>();
         pointDown = new Point();
         pointStart = new Point();
         pointEnd = new Point();
+        textRect = new Rect();
 
         cellWidth = WUtils.dip2px(context, 50);
+        textSize = WUtils.dip2px(context, 12);
 
 
         for (int i = 0; i < 20; i++) {
-            lineInfors.add(new LineChatBean(WUtils.randomInt(0, 50)));
+            lineInfors.add(new LineChatBean(WUtils.randomInt(-50, 50)));
         }
 
 
+        setBackgroundColor(Color.RED);
     }
 
 
@@ -102,11 +113,11 @@ public class LineChartView extends View {
             pointDown.y = (int) event.getY();
         }
 
-        if (downY==0||downX==0){
+        if (downY == 0 || downX == 0) {
             downX = (int) event.getX();
             downY = (int) event.getY();
         }
-        
+
         boolean result = true;
 
         switch (event.getAction()) {
@@ -130,21 +141,24 @@ public class LineChartView extends View {
                         int maxLeft = mWidth - cellWidth * lineInfors.size();
                         if (pointStart.x < maxLeft) {
                             pointStart.x = maxLeft;
-                            result=false;
+                            result = false;
                             getParent().requestDisallowInterceptTouchEvent(false);
 
                         }
 
                         if (pointStart.x > 0) {
                             pointStart.x = 0;
-                            result=false;
+                            result = false;
                             getParent().requestDisallowInterceptTouchEvent(false);
                         }
 
                     }
                     postInvalidate();
                 } else {
-                    result = false;
+                    if (Math.abs(moveY - downY)> WUtils.getTouchSlop(getContext())) {
+                        result = false;
+                        getParent().requestDisallowInterceptTouchEvent(false);
+                    }
                 }
                 pointDown.x = (int) moveX;
                 pointDown.y = (int) moveY;
@@ -158,14 +172,13 @@ public class LineChartView extends View {
                 downY = 0;
                 break;
         }
-
-        JLog.i("result:"+result);
-
         return result;
     }
 
+
     private void drawLine(List<LineChatBean> lineInfor, Path mPath, Canvas canvas) {
         if (lineInfor != null && !lineInfor.isEmpty()) {
+
             final int y = maxY - minY;
             if (y == 0) {
                 return;
@@ -182,12 +195,59 @@ public class LineChartView extends View {
                 } else {
                     mPath.lineTo(pointX, pointY);
                 }
+                drawText(canvas, String.valueOf(chatBean.value).concat("℃"), pointX, pointY, textSize);
+
+                drawTimeText(canvas, String.valueOf("晴天"), pointX, textSize);
+
             }
+            mPaint.setStrokeWidth(lineWidth);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeMiter(20);
+
             canvas.drawPath(mPath, mPaint);
             canvas.restore();
 
         }
     }
+
+    private void drawTimeText(Canvas canvas, String s, int pointX, int textSize) {
+
+        int baseY = mHeight - textRect.height() / 2  ;
+        drawText(canvas, s, pointX, baseY, textSize);
+        baseY -= mPaint.getFontSpacing();
+        drawText(canvas, s, pointX, baseY, textSize);
+        baseY -= mPaint.getFontSpacing();
+        drawText(canvas, s, pointX, baseY, textSize);
+//        int y = baseY-getTextHeight(s,textSize)- textRect.height() / 2;
+        int y = baseY -getTextHeight(s,textSize);
+
+        canvas.drawLine(0, y,mWidth, y,mPaint);
+
+    }
+
+    private void drawText(Canvas canvas, String text, int pointX, int pointY, int textSize) {
+
+        mPaint.setTextSize(textSize);
+        mPaint.setStrokeWidth(1);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        String s = String.valueOf(text);
+        mPaint.getTextBounds(s, 0, s.length(), textRect);
+
+        JLog.i(text+">>>>"+textRect.top);
+        canvas.drawText(s, 0, s.length(), pointX, pointY, mPaint);
+        JLog.d(text+">>>>"+textRect.top);
+    }
+
+    private int getTextHeight(String text, int textSize) {
+        mPaint.setTextSize(textSize);
+        mPaint.setStrokeWidth(1);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaint.getTextBounds(text, 0, text.length(), textRect);
+        return textRect.height();
+    }
+
 
     public static class LineChatBean {
         public int value;
