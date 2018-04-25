@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/BlueWeather.iml" filepath="$PROJECT_DIR$/BlueWeather.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/baselibrary/baselibrary.iml" filepath="$PROJECT_DIR$/baselibrary/baselibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/commonlibrary/commonlibrary.iml" filepath="$PROJECT_DIR$/commonlibrary/commonlibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/weathermode/weathermode.iml" filepath="$PROJECT_DIR$/weathermode/weathermode.iml" />
     </modules>
   </component>

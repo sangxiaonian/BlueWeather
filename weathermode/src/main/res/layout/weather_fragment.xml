@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#abcdef"
-    android:id="@+id/root"
     android:orientation="vertical">
 
 
@@ -13,19 +13,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:divider="@drawable/line"
-            android:showDividers="middle"
             android:layout_height="wrap_content"
+            android:divider="@drawable/line"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:showDividers="middle">
 
             <LinearLayout
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="30dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
                 <TextView
 
                     android:id="@+id/tv_temperature"
@@ -74,69 +75,81 @@
 
 
             <LinearLayout
-                android:padding="@dimen/app_bound_gap"
-
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+
+                android:layout_height="wrap_content"
+                android:padding="@dimen/app_bound_gap">
+
                 <TextView
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="@dimen/text_content_size"
-                    android:textColor="@color/color_hight"
                     android:text="4月4日星期三"
-                    android:layout_height="wrap_content" />
+                    android:textColor="@color/color_hight"
+                    android:textSize="@dimen/text_content_size" />
 
                 <ImageView
                     android:layout_width="25dp"
-                    android:src="@mipmap/cond_icon_sun"
-                    android:layout_height="25dp" />
+                    android:layout_height="25dp"
+                    android:src="@mipmap/cond_icon_sun" />
+
                 <TextView
-                    android:layout_weight="1"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="end"
-                    android:textSize="@dimen/text_content_size"
-                    android:textColor="@color/color_hight"
                     android:text="21/11℃"
-                    android:layout_height="wrap_content" />
+                    android:textColor="@color/color_hight"
+                    android:textSize="@dimen/text_content_size" />
 
             </LinearLayout>
 
             <LinearLayout
 
-                android:padding="@dimen/app_bound_gap"
-
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+
+                android:layout_height="wrap_content"
+                android:padding="@dimen/app_bound_gap">
+
                 <TextView
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="@dimen/text_content_size"
-                    android:textColor="@color/color_hight"
                     android:text="4月4日星期三"
-                    android:layout_height="wrap_content" />
+                    android:textColor="@color/color_hight"
+                    android:textSize="@dimen/text_content_size" />
 
                 <ImageView
                     android:layout_width="25dp"
-                    android:src="@mipmap/cond_icon_sun"
-                    android:layout_height="25dp" />
+                    android:layout_height="25dp"
+                    android:src="@mipmap/cond_icon_sun" />
+
                 <TextView
-                    android:layout_weight="1"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="end"
-                    android:textSize="@dimen/text_content_size"
-                    android:textColor="@color/color_hight"
                     android:text="21/11℃"
-                    android:layout_height="wrap_content" />
+                    android:textColor="@color/color_hight"
+                    android:textSize="@dimen/text_content_size" />
 
             </LinearLayout>
+
             <sang.com.weathermode.widget.LineChartView
-                android:layout_marginTop="@dimen/app_bound_gap"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="200dp"
+                android:layout_marginTop="@dimen/app_bound_gap" />
 
 
+            <sang.com.weathermode.widget.ItemInforView
+                android:id="@+id/item_sky"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-
+            <sang.com.weathermode.widget.ItemInforView
+                android:id="@+id/item_humidity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
 
         </LinearLayout>

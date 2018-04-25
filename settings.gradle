@@ -1,1 +1,1 @@
-include ':app', ':weathermode', ':baselibrary'
+include ':app', ':weathermode', ':baselibrary', ':commonlibrary'
